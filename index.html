@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero's Partner Leads</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f5f2;--panel:#fff;--ink:#16181d;--muted:#6b6f78;--line:#e6e3dc;
+  --accent:#e2541b;--accent-soft:#fdeee6;--hi:#1f7a4d;--hi-soft:#e5f3eb;--md:#8a6d00;--md-soft:#fbf3d6;
+  --lo:#8a8f98;--lo-soft:#eef0f2;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,sans-serif}
+a{color:inherit}
+header{padding:28px 32px 8px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+h1{margin:0;font-size:28px;letter-spacing:-.02em;font-weight:700}
+h1 span{color:var(--accent)}
+.sub{color:var(--muted);margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;padding:16px 32px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.stat b{display:block;font-size:24px;letter-spacing:-.02em}
+.stat small{color:var(--muted)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;padding:8px 32px 14px;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--line)}
+input,select,button{font:inherit;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 10px;color:var(--ink)}
+input[type=search]{flex:1;min-width:220px}
+button{cursor:pointer;font-weight:500}
+button.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+label.tog{display:flex;align-items:center;gap:6px;padding:0 6px;color:var(--muted)}
+.count{margin-left:auto;align-self:center;color:var(--muted)}
+.wrap{padding:0 32px 40px}
+table{width:100%;min-width:760px;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;cursor:pointer;user-select:none;background:#fbfaf8}
+th.sorted::after{content:" \2193"}th.sorted.asc::after{content:" \2191"}
+tr.row{cursor:pointer}tr.row:hover td{background:#fcfbf9}
+.biz{font-weight:600}
+.biz a{text-decoration:none}.biz a:hover{text-decoration:underline}
+.meta{color:var(--muted);font-size:12px}
+.chip{display:inline-block;font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--lo-soft);color:var(--lo);white-space:nowrap}
+.chip.cat{background:var(--accent-soft);color:var(--accent)}
+.chip.high{background:var(--hi-soft);color:var(--hi)}
+.chip.medium{background:var(--md-soft);color:var(--md)}
+.email{font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+.copy{border:none;background:none;padding:0 4px;color:var(--muted);font-size:12px}
+.copy:hover{color:var(--accent)}
+.soc a{margin-right:8px;font-size:12px;color:var(--muted);text-decoration:none}
+.soc a:hover{color:var(--accent)}
+tr.detail td{background:#fbfaf8;font-size:13px}
+.dgrid{display:grid;grid-template-columns:140px 1fr;gap:6px 14px}
+.dgrid div:nth-child(odd){color:var(--muted)}
+.more{display:block;margin:16px auto}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+@media (max-width:900px){
+  header,.stats,.bar,.wrap{padding-left:16px;padding-right:16px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .hide-sm{display:none}
+  .wrap{overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+<div id="gate" style="position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px">
+  <form id="gf" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:28px;max-width:360px;width:100%">
+    <h1 style="font-size:22px">Hero's <span>partner leads</span></h1>
+    <p class="sub" style="margin:8px 0 16px">Enter the passcode you were sent.</p>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="Passcode" style="width:100%;margin-bottom:10px">
+    <button class="primary" style="width:100%">Open list</button>
+    <p id="gerr" class="meta" style="color:var(--accent);min-height:18px;margin:10px 0 0"></p>
+  </form>
+</div>
+<header>
+  <div>
+    <h1>Hero's <span>partner leads</span></h1>
+    <div class="sub">Local businesses in the Dallas suburbs that send junk-removal jobs: realtors, property managers, remodelers, senior living, estate and probate. Dallas proper excluded.</div>
+  </div>
+  <div class="meta" id="src"></div>
+</header>
+
+<section class="stats" id="stats"></section>
+
+<div class="bar">
+  <input type="search" id="q" placeholder="Search business, person, email, city">
+  <select id="cat"><option value="">All categories</option></select>
+  <select id="city"><option value="">All cities</option></select>
+  <select id="conf">
+    <option value="">Any contact</option>
+    <option value="named">Has a person name</option>
+    <option value="high">Name matches email</option>
+    <option value="none">No name yet</option>
+  </select>
+  <button class="primary" id="export">Export CSV</button>
+  <span class="count" id="count"></span>
+</div>
+
+<div class="wrap">
+  <table>
+    <thead><tr>
+      <th data-k="business">Business</th>
+      <th data-k="contact_name">Contact</th>
+      <th data-k="email">Email</th>
+      <th data-k="phone" class="hide-sm">Phone</th>
+      <th data-k="city">City</th>
+      <th data-k="reviews" class="hide-sm">Google</th>
+      <th class="hide-sm">Links</th>
+    </tr></thead>
+    <tbody id="tb"></tbody>
+  </table>
+  <button class="more" id="more">Show more</button>
+</div>
+
+<script>
+const PAGE = 150;
+let ALL = [], VIEW = [], shown = PAGE, sortK = "", sortAsc = true, open = new Set();
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pretty = s => String(s || "").replace(/-/g, " ");
+
+function parseCSV(t){
+  const rows=[];let row=[],f="",q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c=='"')q=true;else if(c==','){row.push(f);f=""}
+    else if(c=='\n'){row.push(f);rows.push(row);row=[];f=""}else if(c!='\r')f+=c}
+  if(f||row.length){row.push(f);rows.push(row)}
+  const h=rows.shift();return rows.filter(r=>r.length>1).map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]??""])));
+}
+
+async function load(){
+  const ub = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const enc = await (await fetch("data.enc.json",{cache:"no-store"})).json();
+  async function tryPw(pw){
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+    const key = await crypto.subtle.deriveKey({name:"PBKDF2", salt:ub(enc.salt), iterations:enc.iter, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+    const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:ub(enc.iv)}, key, ub(enc.ct));
+    return JSON.parse(new TextDecoder().decode(pt));
+  }
+  async function unlock(pw){
+    try{ ALL = await tryPw(pw); }catch(e){ return false; }
+    try{ sessionStorage.setItem("hpl", pw); }catch(e){}
+    $("#gate").remove(); $("#src").textContent = "";
+    ALL.forEach((d,i)=>{d._i=i;d.reviews=+d.reviews||0;d.rating=d.rating?(+d.rating).toFixed(1):""});
+    fill("#cat", count(ALL,"category"), pretty);
+    fill("#city", count(ALL,"city"));
+    stats(); apply(); return true;
+  }
+  let saved = null; try{ saved = sessionStorage.getItem("hpl"); }catch(e){}
+  if(saved && await unlock(saved)) return;
+  $("#gf").onsubmit = async ev => { ev.preventDefault(); $("#gerr").textContent = "Checking...";
+    if(!await unlock($("#pw").value.trim())) $("#gerr").textContent = "That passcode didn't work."; };
+  $("#pw").focus();
+}
+function count(a,k){const m={};a.forEach(d=>m[d[k]]=(m[d[k]]||0)+1);return Object.entries(m).sort((a,b)=>b[1]-a[1])}
+function fill(sel,pairs,fmt=x=>x){$(sel).insertAdjacentHTML("beforeend",pairs.map(([k,n])=>`<option value="${esc(k)}">${esc(fmt(k))} (${n})</option>`).join(""))}
+
+function stats(){
+  const named = ALL.filter(d=>d.contact_name).length;
+  const high = ALL.filter(d=>d.name_confidence==="high").length;
+  const cities = new Set(ALL.map(d=>d.city)).size;
+  const socials = ALL.filter(d=>d.facebook||d.instagram||d.linkedin).length;
+  $("#stats").innerHTML = [
+    [ALL.length.toLocaleString(),"leads with an email"],
+    [named.toLocaleString(),"with a person's name"],
+    [high.toLocaleString(),"name matches the email"],
+    [cities,"suburbs covered"],
+    [socials.toLocaleString(),"with social profiles"],
+  ].map(([b,s])=>`<div class="stat"><b>${b}</b><small>${s}</small></div>`).join("");
+}
+
+function apply(){
+  const q = $("#q").value.trim().toLowerCase(), c=$("#cat").value, ci=$("#city").value, cf=$("#conf").value;
+  VIEW = ALL.filter(d=>{
+    if(c && d.category!==c) return false;
+    if(ci && d.city!==ci) return false;
+    if(cf==="named" && !d.contact_name) return false;
+    if(cf==="high" && d.name_confidence!=="high") return false;
+    if(cf==="none" && d.contact_name) return false;
+    if(q && !`${d.business} ${d.contact_name} ${d.email} ${d.city} ${d.other_people||""} ${d.title||""}`.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if(sortK) VIEW.sort((a,b)=>{const x=a[sortK],y=b[sortK];const r=typeof x==="number"?x-y:String(x||"~").localeCompare(String(y||"~"));return sortAsc?r:-r});
+  shown = PAGE; render();
+}
+
+function render(){
+  $("#count").textContent = `${VIEW.length.toLocaleString()} shown`;
+  if(!VIEW.length){$("#tb").innerHTML=`<tr><td colspan="7" class="empty">No leads match these filters.</td></tr>`;$("#more").style.display="none";return}
+  $("#tb").innerHTML = VIEW.slice(0,shown).map(row).join("");
+  $("#more").style.display = shown < VIEW.length ? "block" : "none";
+}
+
+function row(d){
+  const site = d.website ? `<a href="${esc(d.website)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(d.business)}</a>` : esc(d.business);
+  const conf = d.name_confidence ? `<span class="chip ${esc(d.name_confidence)}">${d.name_confidence==="high"?"matches email":d.name_confidence}</span>` : "";
+  const contact = d.contact_name ? `<div>${esc(d.contact_name)} ${conf}</div><div class="meta">${esc(d.title||"")}</div>` : `<span class="meta">Not found</span>`;
+  const links = [["maps_url","Maps"],["facebook","FB"],["instagram","IG"],["linkedin","LinkedIn"]]
+    .filter(([k])=>d[k]).map(([k,l])=>`<a href="${esc(d[k])}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${l}</a>`).join("");
+  const li = d.contact_name ? `<a href="https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(d.contact_name+" "+d.business)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Find on LinkedIn</a>` : "";
+  let html = `<tr class="row" data-i="${d._i}">
+    <td><div class="biz">${site}</div><span class="chip cat">${esc(pretty(d.category))}</span></td>
+    <td>${contact}</td>
+    <td class="email">${esc(d.email)}<button class="copy" data-copy="${esc(d.email)}" title="Copy">copy</button></td>
+    <td class="hide-sm">${d.phone?`<a href="tel:${esc(d.phone.replace(/[^\d+]/g,""))}" onclick="event.stopPropagation()">${esc(d.phone)}</a>`:""}</td>
+    <td>${esc(d.city)}</td>
+    <td class="hide-sm">${d.rating?`${d.rating} <span class="meta">(${d.reviews})</span>`:'<span class="meta">none</span>'}</td>
+    <td class="soc hide-sm">${links}${li}</td></tr>`;
+  if(open.has(d._i)) html += `<tr class="detail"><td colspan="7"><div class="dgrid">
+    <div>Address</div><div>${esc(d.address)}</div>
+    <div>Name found by</div><div>${esc(d.name_source||"Not found")}</div>
+    <div>Other people</div><div>${esc(d.other_people||"None listed")}</div>
+    <div>Other emails</div><div class="email">${esc(d.other_emails||"None")}</div>
+    <div>Phones on site</div><div>${esc(d.other_phones||"None")}</div>
+    <div>X / YouTube</div><div>${[d.x,d.youtube].filter(Boolean).map(u=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a>`).join(" ")||"None"}</div>
+  </div></td></tr>`;
+  return html;
+}
+
+document.addEventListener("click",e=>{
+  const cp = e.target.closest(".copy");
+  if(cp){e.stopPropagation();navigator.clipboard?.writeText(cp.dataset.copy);cp.textContent="copied";setTimeout(()=>cp.textContent="copy",1200);return}
+  const tr = e.target.closest("tr.row");
+  if(tr){const i=+tr.dataset.i;open.has(i)?open.delete(i):open.add(i);render();return}
+  const th = e.target.closest("th[data-k]");
+  if(th){const k=th.dataset.k;sortAsc = sortK===k?!sortAsc:(k!=="reviews");sortK=k;
+    document.querySelectorAll("th").forEach(t=>t.classList.remove("sorted","asc"));th.classList.add("sorted");if(sortAsc)th.classList.add("asc");apply()}
+});
+["#q","#cat","#city","#conf"].forEach(s=>$(s).addEventListener("input",apply));
+$("#more").onclick=()=>{shown+=PAGE;render()};
+$("#export").onclick=()=>{
+  const cols=["business","category","city","contact_name","first_name","last_name","title","name_confidence","email","phone","website","address","rating","reviews","facebook","instagram","linkedin","other_people","other_emails","maps_url"];
+  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const csv=[cols.join(",")].concat(VIEW.map(d=>cols.map(c=>q(d[c])).join(","))).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="heros_leads_filtered.csv";a.click();
+};
+load();
+</script>
+</body>
+</html>
