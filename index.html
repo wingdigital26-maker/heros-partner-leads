@@ -141,6 +141,7 @@ function parseCSV(t){
 
 async function load(){
   const ub = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  $("#gf").onsubmit = ev => { ev.preventDefault(); $("#gerr").textContent = "Loading..."; };
   const enc = await (await fetch("data.enc.json",{cache:"no-store"})).json();
   async function tryPw(pw){
     const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
