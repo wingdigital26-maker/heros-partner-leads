@@ -52,6 +52,8 @@ tr.row{cursor:pointer}tr.row:hover td{background:#fcfbf9}
 tr.detail td{background:#fbfaf8;font-size:13px}
 .dgrid{display:grid;grid-template-columns:140px 1fr;gap:6px 14px}
 .dgrid div:nth-child(odd){color:var(--muted)}
+.pitch{white-space:pre-wrap;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;max-width:640px;font-size:13px;line-height:1.5}
+.copy.pc{display:inline-block;margin:8px 12px 0 0;font-size:13px;font-weight:600;color:var(--accent)}
 .more{display:block;margin:16px auto}
 .empty{padding:40px;text-align:center;color:var(--muted)}
 @media (max-width:900px){
@@ -92,6 +94,12 @@ tr.detail td{background:#fbfaf8;font-size:13px}
     <option value="named">Has a person name</option>
     <option value="high">Name matches email</option>
     <option value="none">No name yet</option>
+  </select>
+  <select id="fit">
+    <option value="">Any pitch fit</option>
+    <option value="strong">Strong fit</option>
+    <option value="ok">OK fit</option>
+    <option value="low">Low fit</option>
   </select>
   <button class="primary" id="export">Export CSV</button>
   <span class="count" id="count"></span>
@@ -173,9 +181,10 @@ function stats(){
 }
 
 function apply(){
-  const q = $("#q").value.trim().toLowerCase(), c=$("#cat").value, ci=$("#city").value, cf=$("#conf").value;
+  const q = $("#q").value.trim().toLowerCase(), c=$("#cat").value, ci=$("#city").value, cf=$("#conf").value, ft=$("#fit").value;
   VIEW = ALL.filter(d=>{
     if(c && d.category!==c) return false;
+    if(ft && d.pitch_fit!==ft) return false;
     if(ci && d.city!==ci) return false;
     if(cf==="named" && !d.contact_name) return false;
     if(cf==="high" && d.name_confidence!=="high") return false;
@@ -202,7 +211,7 @@ function row(d){
     .filter(([k])=>d[k]).map(([k,l])=>`<a href="${esc(d[k])}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${l}</a>`).join("");
   const li = d.contact_name ? `<a href="https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(d.contact_name+" "+d.business)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Find on LinkedIn</a>` : "";
   let html = `<tr class="row" data-i="${d._i}">
-    <td><div class="biz">${site}</div><span class="chip cat">${esc(pretty(d.category))}</span></td>
+    <td><div class="biz">${site}</div><span class="chip cat">${esc(pretty(d.category))}</span>${d.pitch_fit?` <span class="chip ${d.pitch_fit==="strong"?"high":d.pitch_fit==="ok"?"medium":""}">${d.pitch_fit} fit</span>`:""}</td>
     <td>${contact}</td>
     <td class="email">${esc(d.email)}<button class="copy" data-copy="${esc(d.email)}" title="Copy">copy</button></td>
     <td class="hide-sm">${d.phone?`<a href="tel:${esc(d.phone.replace(/[^\d+]/g,""))}" onclick="event.stopPropagation()">${esc(d.phone)}</a>`:""}</td>
@@ -215,6 +224,9 @@ function row(d){
     <div>Other people</div><div>${esc(d.other_people||"None listed")}</div>
     <div>Other emails</div><div class="email">${esc(d.other_emails||"None")}</div>
     <div>Phones on site</div><div>${esc(d.other_phones||"None")}</div>
+    ${d.pitch?`<div>Pitch</div><div><div class="pitch"><b>Subject: ${esc(d.pitch_subject)}</b>
+
+${esc(d.pitch)}</div><button class="copy pc" data-copy="${esc("Subject: "+d.pitch_subject+"\n\n"+d.pitch)}">copy pitch</button></div>`:""}
     <div>X / YouTube</div><div>${[d.x,d.youtube].filter(Boolean).map(u=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a>`).join(" ")||"None"}</div>
   </div></td></tr>`;
   return html;
@@ -222,17 +234,17 @@ function row(d){
 
 document.addEventListener("click",e=>{
   const cp = e.target.closest(".copy");
-  if(cp){e.stopPropagation();navigator.clipboard?.writeText(cp.dataset.copy);cp.textContent="copied";setTimeout(()=>cp.textContent="copy",1200);return}
+  if(cp){e.stopPropagation();navigator.clipboard?.writeText(cp.dataset.copy);const t=cp.textContent;cp.textContent="copied";setTimeout(()=>cp.textContent=t,1200);return}
   const tr = e.target.closest("tr.row");
   if(tr){const i=+tr.dataset.i;open.has(i)?open.delete(i):open.add(i);render();return}
   const th = e.target.closest("th[data-k]");
   if(th){const k=th.dataset.k;sortAsc = sortK===k?!sortAsc:(k!=="reviews");sortK=k;
     document.querySelectorAll("th").forEach(t=>t.classList.remove("sorted","asc"));th.classList.add("sorted");if(sortAsc)th.classList.add("asc");apply()}
 });
-["#q","#cat","#city","#conf"].forEach(s=>$(s).addEventListener("input",apply));
+["#q","#cat","#city","#conf","#fit"].forEach(s=>$(s).addEventListener("input",apply));
 $("#more").onclick=()=>{shown+=PAGE;render()};
 $("#export").onclick=()=>{
-  const cols=["business","category","city","contact_name","first_name","last_name","title","name_confidence","email","phone","website","address","rating","reviews","facebook","instagram","linkedin","other_people","other_emails","maps_url"];
+  const cols=["pitch_fit","pitch_subject","pitch","business","category","city","contact_name","first_name","last_name","title","name_confidence","email","phone","website","address","rating","reviews","facebook","instagram","linkedin","other_people","other_emails","maps_url"];
   const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
   const csv=[cols.join(",")].concat(VIEW.map(d=>cols.map(c=>q(d[c])).join(","))).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="heros_leads_filtered.csv";a.click();
